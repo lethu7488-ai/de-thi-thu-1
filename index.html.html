@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THI THỬ TỐT NGHIỆP THPT - MÔN CÔNG NGHỆ (NÔNG NGHỆP)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        agri: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom Styles for Canvas & UI Aesthetics */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .question-btn {
+            transition: all 0.2s ease;
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 font-sans flex flex-col antialiased selection:bg-agri-500 selection:text-white">
+
+    <!-- HEADER -->
+    <header class="bg-gradient-to-r from-agri-800 via-agri-700 to-teal-800 text-white shadow-lg sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-white/10 rounded-xl backdrop-blur-md border border-white/20">
+                    <i class="fa-solid fa-seedling text-2xl text-emerald-300"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg md:text-xl tracking-tight leading-tight">THI THỬ TỐT NGHIỆP THPT</h1>
+                    <p class="text-xs sm:text-sm text-emerald-200 font-medium">MÔN CÔNG NGHỆ – ĐỊNH HƯỚNG NÔNG NGHIỆP</p>
+                </div>
+            </div>
+
+            <!-- Right side Header Actions -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div id="header-timer" class="hidden flex items-center bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20">
+                    <i class="fa-regular fa-clock mr-2 text-emerald-300 animate-pulse"></i>
+                    <span id="timer-display" class="font-mono font-bold text-lg text-yellow-300">50:00</span>
+                </div>
+                
+                <button onclick="toggleTeacherView()" class="inline-flex items-center px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg text-xs sm:text-sm font-medium transition duration-150">
+                    <i class="fa-solid fa-chart-pie mr-1.5 text-emerald-300"></i>
+                    <span class="hidden sm:inline">QUẢN LÝ / THỐNG KÊ</span>
+                    <span class="sm:hidden">QUẢN LÝ</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-6 flex flex-col">
+        
+        <!-- 1. START VIEW / REGISTRATION -->
+        <section id="view-start" class="max-w-2xl mx-auto w-full my-auto animate-fade-in">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden">
+                <div class="bg-gradient-to-r from-agri-700 to-emerald-600 p-6 text-white text-center relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 opacity-10 text-white">
+                        <i class="fa-solid fa-[#15803d] fa-wheat-awn text-9xl"></i>
+                    </div>
+                    <div class="inline-block p-3 bg-white/10 rounded-full mb-3 backdrop-blur-sm">
+                        <i class="fa-solid fa-graduation-cap text-3xl text-emerald-200"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold">HỆ THỐNG THI THỬ TRỰC TUYẾN</h2>
+                    <p class="text-emerald-100 text-sm mt-1">Cấu trúc chuẩn Đề minh họa Kỳ thi Tốt nghiệp THPT môn Công nghệ Nông nghiệp</p>
+                </div>
+
+                <form id="form-register" onsubmit="handleStartExam(event)" class="p-6 sm:p-8 space-y-4">
+                    <div class="space-y-1">
+                        <label class="block text-sm font-semibold text-slate-700">Họ và tên học sinh <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                <i class="fa-solid fa-user"></i>
+                            </span>
+                            <input type="text" id="input-fullname" required placeholder="Nhập họ và tên đầy đủ..." 
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-agri-500 focus:border-agri-500 text-sm transition">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-slate-700">Lớp <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                    <i class="fa-solid fa-users-rectangle"></i>
+                                </span>
+                                <input type="text" id="input-class" required placeholder="Ví dụ: 12A1" 
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-agri-500 focus:border-agri-500 text-sm transition">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-slate-700">Trường <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                    <i class="fa-solid fa-school"></i>
+                                </span>
+                                <input type="text" id="input-school" required placeholder="Ví dụ: THPT Lê Hồng Phong" 
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-agri-500 focus:border-agri-500 text-sm transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="block text-sm font-semibold text-slate-700">Số báo danh (Không bắt buộc)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                <i class="fa-solid fa-id-card"></i>
+                            </span>
+                            <input type="text" id="input-sbd" placeholder="Ví dụ: 120045" 
+                                class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-agri-500 focus:border-agri-500 text-sm transition">
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-xs text-emerald-800 space-y-1">
+                            <p class="font-semibold text-emerald-900 flex items-center">
+                                <i class="fa-solid fa-circle-info mr-1.5"></i> Thông tin bài thi:
+                            </p>
+                            <ul class="list-disc list-inside space-y-1 text-slate-600 pl-1">
+                                <li><strong>Tổng số câu:</strong> 28 câu (Phần I: 24 câu MCQ | Phần II: 4 câu Đúng/Sai).</li>
+                                <li><strong>Thời gian làm bài:</strong> 50 phút.</li>
+                                <li>Kết quả sẽ lưu trực tiếp vào bảng tổng hợp sau khi nộp bài.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-agri-600 to-teal-600 hover:from-agri-700 hover:to-teal-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition transform active:scale-[0.99] flex items-center justify-center text-base">
+                        <span>BẮT ĐẦU LÀM BÀI</span>
+                        <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 2. EXAM VIEW -->
+        <section id="view-exam" class="hidden flex-1 flex flex-col lg:flex-row gap-5 animate-fade-in">
+            <!-- Left Main Area: Question & Options -->
+            <div class="flex-1 flex flex-col bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden">
+                <!-- Top Info Bar -->
+                <div class="bg-slate-100 border-b border-slate-200 p-4 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-agri-100 text-agri-700 font-bold flex items-center justify-center text-sm shadow-inner" id="exam-user-avatar">
+                            HS
+                        </div>
+                        <div>
+                            <div id="exam-student-name" class="font-bold text-slate-800 leading-tight">---</div>
+                            <div class="text-xs text-slate-500" id="exam-student-meta">Lớp: --- | Trường: ---</div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-3 text-xs sm:text-sm font-medium">
+                        <div class="bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700">
+                            Tiến độ: <span id="exam-progress-text" class="font-bold text-agri-600">0/28</span>
+                        </div>
+                        <button onclick="toggleFlagCurrentQuestion()" id="btn-flag-q" class="bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition flex items-center">
+                            <i class="fa-solid fa-bookmark mr-1.5"></i>
+                            <span id="flag-text">Đánh dấu</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-200 h-1.5">
+                    <div id="exam-progress-bar" class="bg-agri-500 h-1.5 transition-all duration-300" style="width: 0%"></div>
+                </div>
+
+                <!-- Question Area -->
+                <div class="flex-1 p-4 sm:p-6 overflow-y-auto min-h-[350px]" id="question-container">
+                    <!-- Dynamic Question Content Injected by JS -->
+                </div>
+
+                <!-- Navigation & Action Buttons Footer -->
+                <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <!-- Prev / Next Navigation -->
+                    <div class="flex items-center space-x-2 w-full sm:w-auto">
+                        <button onclick="prevQuestion()" id="btn-prev" class="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl font-semibold text-sm transition flex items-center justify-center">
+                            <i class="fa-solid fa-chevron-left mr-2"></i> CÂU TRƯỚC
+                        </button>
+                        <button onclick="nextQuestion()" id="btn-next" class="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 rounded-xl font-semibold text-sm transition flex items-center justify-center">
+                            CÂU TIẾP THEO <i class="fa-solid fa-chevron-right ml-2"></i>
+                        </button>
+                    </div>
+
+                    <!-- SUBMIT & RESET BUTTONS SIDE BY SIDE (MANDATORY REQUIREMENT) -->
+                    <div class="flex items-center space-x-2 w-full sm:w-auto justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-200">
+                        <button onclick="confirmResetExam()" class="flex-1 sm:flex-none px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold text-sm shadow transition flex items-center justify-center">
+                            <i class="fa-solid fa-rotate-left mr-1.5"></i> LÀM LẠI
+                        </button>
+                        <button onclick="confirmSubmitExam()" class="flex-1 sm:flex-none px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md transition flex items-center justify-center">
+                            <i class="fa-solid fa-paper-plane mr-1.5"></i> NỘP BÀI
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar: Question Palette & Overview -->
+            <div class="w-full lg:w-80 bg-white rounded-2xl shadow-md border border-slate-200 p-4 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-bold text-slate-800 text-base mb-3 flex items-center justify-between">
+                        <span><i class="fa-solid fa-grip mr-2 text-agri-600"></i>Danh sách câu hỏi</span>
+                        <span class="text-xs font-normal text-slate-500">28 câu</span>
+                    </h3>
+
+                    <!-- Status Legend -->
+                    <div class="grid grid-cols-3 gap-1.5 mb-4 text-[11px] text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                        <div class="flex items-center"><span class="w-3 h-3 bg-slate-200 border border-slate-300 rounded mr-1"></span> Chưa chọn</div>
+                        <div class="flex items-center"><span class="w-3 h-3 bg-agri-500 rounded text-white mr-1"></span> Đã chọn</div>
+                        <div class="flex items-center"><span class="w-3 h-3 bg-amber-500 rounded text-white mr-1"></span> Cần xem lại</div>
+                    </div>
+
+                    <!-- Questions Palette Grid -->
+                    <div class="max-h-[380px] overflow-y-auto pr-1">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phần I: Trắc nghiệm (1 - 24)</div>
+                        <div id="palette-part-1" class="grid grid-cols-6 gap-2 mb-4">
+                            <!-- Injected by JS -->
+                        </div>
+
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Phần II: Đúng / Sai (25 - 28)</div>
+                        <div id="palette-part-2" class="grid grid-cols-4 gap-2">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Status Stats -->
+                <div class="mt-4 pt-4 border-t border-slate-200 space-y-2 text-xs">
+                    <div class="flex justify-between text-slate-600">
+                        <span>Đã làm:</span>
+                        <span id="stat-answered-count" class="font-bold text-emerald-600">0 câu</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Chưa làm:</span>
+                        <span id="stat-unanswered-count" class="font-bold text-slate-400">28 câu</span>
+                    </div>
+                    <div class="flex justify-between text-slate-600">
+                        <span>Cần xem lại:</span>
+                        <span id="stat-flagged-count" class="font-bold text-amber-500">0 câu</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. RESULT VIEW -->
+        <section id="view-result" class="hidden max-w-4xl mx-auto w-full space-y-6 animate-fade-in">
+            <!-- Score Card -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-agri-700 to-teal-700 p-6 sm:p-8 text-white text-center">
+                    <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-semibold uppercase tracking-wider mb-2">KẾT QUẢ BÀI THI THỬ</span>
+                    <h2 id="result-student-name" class="text-2xl sm:text-3xl font-bold">---</h2>
+                    <p id="result-student-meta" class="text-emerald-100 text-sm mt-1">Lớp: --- | Trường: ---</p>
+
+                    <!-- Score Badge Circle -->
+                    <div class="my-6 inline-flex flex-col items-center justify-center w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-white text-slate-800 shadow-2xl border-4 border-emerald-300 ring-8 ring-white/10">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Điểm Số</span>
+                        <span id="result-score-number" class="text-4xl sm:text-5xl font-black text-agri-600 my-1">0.00</span>
+                        <span class="text-xs font-semibold text-slate-500">Thang điểm 10</span>
+                    </div>
+
+                    <div id="result-grade-badge" class="inline-block px-4 py-1.5 bg-emerald-500/30 backdrop-blur-md rounded-xl text-sm font-bold text-white border border-white/20">
+                        Xếp loại: Xuất sắc
+                    </div>
+                </div>
+
+                <!-- Key Metrics Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 bg-slate-50 border-b border-slate-200 text-center">
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="text-xs text-slate-500">Số câu đúng</div>
+                        <div id="res-stat-correct" class="text-xl font-bold text-emerald-600 mt-1">0/28</div>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="text-xs text-slate-500">Số câu sai</div>
+                        <div id="res-stat-incorrect" class="text-xl font-bold text-rose-600 mt-1">0/28</div>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="text-xs text-slate-500">Thời gian làm</div>
+                        <div id="res-stat-time" class="text-xl font-bold text-slate-700 mt-1">00:00</div>
+                    </div>
+                    <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+                        <div class="text-xs text-slate-500">Tỷ lệ chính xác</div>
+                        <div id="res-stat-accuracy" class="text-xl font-bold text-teal-600 mt-1">0%</div>
+                    </div>
+                </div>
+
+                <!-- Action Toolbar -->
+                <div class="p-4 bg-white flex flex-wrap items-center justify-center gap-3">
+                    <button onclick="restartExamFromStart()" class="px-5 py-2.5 bg-agri-600 hover:bg-agri-700 text-white font-bold rounded-xl shadow transition flex items-center">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> LÀM BÀI KHÁC / LÀM LẠI
+                    </button>
+                    <button onclick="toggleTeacherView()" class="px-5 py-2.5 bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl shadow transition flex items-center">
+                        <i class="fa-solid fa-chart-line mr-2"></i> XEM BẢNG XẾP HẠNG
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Answer Review Section -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-file-signature text-agri-600 mr-2"></i>
+                        CHI TIẾT ĐÁP ÁN & GIẢI THÍCH
+                    </h3>
+                    <div class="flex items-center space-x-3 text-xs">
+                        <span class="flex items-center"><i class="fa-solid fa-circle text-emerald-500 mr-1"></i> Đúng</span>
+                        <span class="flex items-center"><i class="fa-solid fa-circle text-rose-500 mr-1"></i> Sai</span>
+                        <span class="flex items-center"><i class="fa-solid fa-circle text-slate-300 mr-1"></i> Bỏ trống</span>
+                    </div>
+                </div>
+
+                <div id="result-answer-list" class="space-y-6">
+                    <!-- Detailed Questions Review Injected by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. TEACHER / STATS VIEW -->
+        <section id="view-teacher" class="hidden flex-1 flex flex-col space-y-6 animate-fade-in">
+            <!-- Top Dashboard Bar -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-chart-pie text-agri-600 mr-2.5"></i>
+                            DASHBOARD THỐNG KÊ GIÁO VIÊN
+                        </h2>
+                        <p class="text-slate-500 text-sm">Quản lý và tổng hợp danh sách học sinh tham gia thi thử</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="exportToCSV()" class="px-3.5 py-2 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 rounded-xl font-semibold text-xs transition flex items-center">
+                            <i class="fa-solid fa-file-excel mr-1.5"></i> Xuất CSV
+                        </button>
+                        <button onclick="confirmClearHistory()" class="px-3.5 py-2 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-xl font-semibold text-xs transition flex items-center">
+                            <i class="fa-solid fa-trash-can mr-1.5"></i> Xóa dữ liệu
+                        </button>
+                        <button onclick="toggleTeacherView()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-semibold text-xs transition flex items-center">
+                            <i class="fa-solid fa-xmark mr-1.5"></i> Đóng
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Key Stat Cards Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs text-slate-500 font-medium">👨‍🎓 Tổng tham gia</div>
+                        <div id="dash-total-students" class="text-2xl font-black text-slate-800 mt-1">0</div>
+                    </div>
+                    <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                        <div class="text-xs text-emerald-700 font-medium">📝 Bài đã nộp</div>
+                        <div id="dash-submitted" class="text-2xl font-black text-emerald-700 mt-1">0</div>
+                    </div>
+                    <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                        <div class="text-xs text-amber-700 font-medium">⏳ Đang làm bài</div>
+                        <div id="dash-in-progress" class="text-2xl font-black text-amber-700 mt-1">0</div>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                        <div class="text-xs text-blue-700 font-medium">📊 Điểm trung bình</div>
+                        <div id="dash-avg-score" class="text-2xl font-black text-blue-700 mt-1">0.0</div>
+                    </div>
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-200">
+                        <div class="text-xs text-purple-700 font-medium">🏆 Điểm cao nhất</div>
+                        <div id="dash-max-score" class="text-2xl font-black text-purple-700 mt-1">0.0</div>
+                    </div>
+                    <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                        <div class="text-xs text-rose-700 font-medium">📉 Điểm thấp nhất</div>
+                        <div id="dash-min-score" class="text-2xl font-black text-rose-700 mt-1">0.0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Distribution Chart & Analytics -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
+                <h3 class="font-bold text-slate-800 text-base mb-4 flex items-center">
+                    <i class="fa-solid fa-chart-column text-agri-600 mr-2"></i>
+                    BIỂU ĐỒ PHÂN BỐ ĐIỂM SỐ
+                </h3>
+                <div class="h-64 w-full">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Student History Table -->
+            <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex-1 flex flex-col">
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+                    <h3 class="font-bold text-slate-800 text-base flex items-center">
+                        <i class="fa-solid fa-list-check text-agri-600 mr-2"></i>
+                        DANH SÁCH HỌC SINH THAM GIA
+                    </h3>
+
+                    <!-- Search & Filter Controls -->
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="teacher-search" oninput="renderStudentTable()" placeholder="Tìm theo tên/SBD..." 
+                            class="px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-1 focus:ring-agri-500">
+                        <select id="teacher-filter-class" onchange="renderStudentTable()" 
+                            class="px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-1 focus:ring-agri-500">
+                            <option value="ALL">Tất cả lớp</option>
+                        </select>
+                        <select id="teacher-sort" onchange="renderStudentTable()" 
+                            class="px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-1 focus:ring-agri-500">
+                            <option value="NEWEST">Mới nhất</option>
+                            <option value="SCORE_DESC">Điểm cao -> thấp</option>
+                            <option value="SCORE_ASC">Điểm thấp -> cao</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Responsive Table Wrapper -->
+                <div class="overflow-x-auto flex-1 border border-slate-200 rounded-xl">
+                    <table class="w-full text-left text-xs text-slate-700">
+                        <thead class="bg-slate-100 text-slate-800 font-bold border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">STT</th>
+                                <th class="p-3">Họ và Tên</th>
+                                <th class="p-3">Lớp</th>
+                                <th class="p-3">Trường</th>
+                                <th class="p-3">SBD</th>
+                                <th class="p-3">Thời Gian</th>
+                                <th class="p-3 text-center">Điểm</th>
+                                <th class="p-3 text-center">Trạng Thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-table-body" class="divide-y divide-slate-200">
+                            <!-- Table Rows Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- CONFIRM SUBMIT MODAL -->
+    <div id="modal-submit" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 animate-fade-in">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-solid fa-circle-question"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800">Xác nhận nộp bài?</h3>
+                <p class="text-xs text-slate-500">Bạn có chắc chắn muốn nộp bài thi ngay bây giờ không?</p>
+            </div>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1.5 text-slate-700">
+                <div class="flex justify-between"><span>Đã trả lời:</span><strong id="modal-sub-done" class="text-emerald-600">0 câu</strong></div>
+                <div class="flex justify-between"><span>Chưa trả lời:</span><strong id="modal-sub-undone" class="text-rose-600">0 câu</strong></div>
+            </div>
+
+            <div class="flex items-center space-x-3 pt-2">
+                <button onclick="closeModal('modal-submit')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
+                    Quay lại làm bài
+                </button>
+                <button onclick="executeSubmitExam()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition">
+                    Xác nhận nộp bài
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM RESET / LÀM LẠI MODAL -->
+    <div id="modal-reset" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 animate-fade-in">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800">Xác nhận làm lại bài?</h3>
+                <p class="text-xs text-amber-700 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                    <strong>Cảnh báo:</strong> Toàn bộ các đáp án bạn đã chọn sẽ bị xóa sạch và đồng hồ sẽ đếm ngược lại từ đầu (50 phút).
+                </p>
+            </div>
+
+            <div class="flex items-center space-x-3 pt-2">
+                <button onclick="closeModal('modal-reset')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
+                    Hủy bỏ
+                </button>
+                <button onclick="executeResetExam()" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow transition">
+                    Đồng ý làm lại
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // QUESTION BANK DATA STRUCTURE (AGRICULTURE TECHNOLOGY - 28 QUESTIONS)
+        const examQuestions = [
+            // PART I: MULTIPLE CHOICE (24 Questions)
+            {
+                id: 1,
+                part: 1,
+                question: "Vì sao phải kiểm tra chất lượng nước định kỳ trong ao nuôi thủy sản?",
+                options: [
+                    "Để dự đoán thời tiết.",
+                    "Để bổ sung lượng nước trong ao.",
+                    "Để kịp thời phát hiện và xử lý những biến đổi bất lợi ảnh hưởng đến vật nuôi.",
+                    "Để định lượng thức ăn cần bổ sung cho cá."
+                ],
+                answer: "C",
+                explanation: "Kiểm tra chất lượng nước định kỳ giúp phát hiện sớm sự biến động bất lợi của các yếu tố lý - hóa - sinh trong nước để xử lý kịp thời, đảm bảo môi trường sống tối ưu cho thủy sản."
+            },
+            {
+                id: 2,
+                part: 1,
+                question: "Phát biểu nào đúng khi nói về vai trò của thủy sản đối với đời sống con người?",
+                options: [
+                    "Cung cấp nguyên liệu cho chế biến và xuất khẩu.",
+                    "Cung cấp nước tưới tiêu cho trồng trọt.",
+                    "Cung cấp thịt, cá, trứng, sữa cho các nhà máy chế biến.",
+                    "Cung cấp nguồn thực phẩm giàu protein cho con người."
+                ],
+                answer: "D",
+                explanation: "Thủy sản trực tiếp cung cấp nguồn thực phẩm có giá trị dinh dưỡng cao, giàu protein, chất béo không no và khoáng chất cho nhu cầu ăn uống hàng ngày của con người."
+            },
+            {
+                id: 3,
+                part: 1,
+                question: "Một trong những biểu hiện khi cá thiếu oxygen là nổi đầu nhiều trên mặt nước. Người nuôi cá nên xử lý như thế nào?",
+                options: [
+                    "Trồng bổ sung các loại rong, tảo.",
+                    "Sử dụng hệ thống nâng nhiệt, chiếu đèn hoặc sục khí.",
+                    "Bổ sung oxygen bằng cách sục khí, quạt nước.",
+                    "Bổ sung oxygen bằng hoà tan H2O2 (oxy già) vào nước để phân huỷ thành O2."
+                ],
+                answer: "C",
+                explanation: "Sử dụng sục khí hoặc máy quạt nước là biện pháp cơ học nhanh chóng và an toàn nhất để khuấy đảo tăng khả năng hòa tan oxygen từ không khí vào nước ao."
+            },
+            {
+                id: 4,
+                part: 1,
+                question: "Động vật thủy sản nào sau đây thuộc nhóm động vật thân mềm?",
+                options: [
+                    "Tôm",
+                    "Cá trắm đen",
+                    "Mực nang",
+                    "Cá sấu"
+                ],
+                answer: "C",
+                explanation: "Mực nang thuộc ngành Động vật thân mềm (Mollusca), lớp Chân đầu (Cephalopoda)."
+            },
+            {
+                id: 5,
+                part: 1,
+                question: "Nếu phát hiện người dân dùng kích điện để khai thác cá trong khu vực bảo tồn, em nên làm gì?",
+                options: [
+                    "Tranh luận trực tiếp với người vi phạm.",
+                    "Quay video để đăng lên mạng xã hội.",
+                    "Bỏ qua vì không liên quan đến mình.",
+                    "Báo cáo chính quyền và cơ quan chức năng địa phương."
+                ],
+                answer: "D",
+                explanation: "Khai thác bằng kích điện là hành vi vi phạm pháp luật hủy diệt môi trường. Cần báo cáo cơ quan chức năng địa phương xử lý theo đúng thẩm quyền và an toàn."
+            },
+            {
+                id: 6,
+                part: 1,
+                question: "Mô hình chăn nuôi nào mà sử dụng robot vắt sữa bò tự động, khép kín hoàn toàn, sữa không tiếp xúc với không khí nên sữa được đảm bảo vệ sinh?",
+                options: [
+                    "Chăn nuôi theo tiêu chuẩn VietGAP.",
+                    "Chăn nuôi bán công nghiệp.",
+                    "Chăn nuôi công nghiệp.",
+                    "Chăn nuôi công nghệ cao."
+                ],
+                answer: "D",
+                explanation: "Chăn nuôi công nghệ cao ứng dụng tự động hóa, robot và quy trình khép kín tiên tiến nhằm tối ưu vệ sinh và năng suất."
+            },
+            {
+                id: 7,
+                part: 1,
+                question: "Tại sao trồng trọt công nghệ cao lại giúp nâng cao năng suất và chất lượng nông sản?",
+                options: [
+                    "Tăng lượng phân bón sử dụng trong sản xuất.",
+                    "Vì giảm chi phí và nhân công trong sản xuất.",
+                    "Vì chỉ sử dụng phân hóa học mà không dùng phân hữu cơ.",
+                    "Vì kiểm soát được môi trường và điều kiện sinh trưởng."
+                ],
+                answer: "D",
+                explanation: "Trồng trọt công nghệ cao chủ động kiểm soát nhiệt độ, ánh sáng, độ ẩm và dinh dưỡng giúp cây trồng phát triển tối ưu."
+            },
+            {
+                id: 8,
+                part: 1,
+                question: "Thực trạng rừng nào dưới đây đang là vấn đề lo ngại ở nước ta hiện nay?",
+                options: [
+                    "Nạn cháy rừng, phá rừng và khai thác trái phép vẫn diễn ra.",
+                    "Đất rừng ngày càng giảm độ màu mỡ và khô cằn.",
+                    "Tỷ lệ che phủ rừng trồng tăng cao.",
+                    "Rừng đặc dụng đang phát triển nhanh."
+                ],
+                answer: "A",
+                explanation: "Mặc dù diện tích rừng tổng thể có tăng nhưng nạn cháy rừng, mất rừng tự nhiên và khai thác lâm sản trái phép vẫn diễn biến phức tạp."
+            },
+            {
+                id: 9,
+                part: 1,
+                question: "Mục đích việc tiêm phòng cho vật nuôi là gì?",
+                options: [
+                    "Giúp vật nuôi tăng năng suất.",
+                    "Tăng trọng lượng cho vật nuôi.",
+                    "Phòng ngừa bệnh truyền nhiễm.",
+                    "Làm vật nuôi dễ thuần hóa."
+                ],
+                answer: "C",
+                explanation: "Tiêm vắc xin tạo miễn dịch chủ động giúp vật nuôi chống lại các mầm bệnh truyền nhiễm nguy hiểm."
+            },
+            {
+                id: 10,
+                part: 1,
+                question: "Những hoạt động nào dưới đây có vai trò bảo vệ tài nguyên rừng?\n(1) Phòng chống sâu, bệnh hại rừng.\n(2) Trồng cây xanh trong các nhà máy, khu công nghiệp.\n(3) Tuyên truyền, giáo dục ý thức chấp hành pháp luật lâm nghiệp.\n(4) Xây dựng và bảo vệ các khu bảo tồn thiên nhiên.\n(5) Tăng cường chăn thả gia súc trong rừng phòng hộ.\n(6) Tăng cường khai thác rừng triệt để.",
+                options: [
+                    "(1), (2), (3), (5)",
+                    "(1), (2), (3), (4)",
+                    "(1), (2), (3), (6)",
+                    "(1), (2), (4), (6)"
+                ],
+                answer: "B",
+                explanation: "Các hoạt động (1), (2), (3), (4) góp phần bảo vệ và mở rộng diện tích rừng. Ý (5) và (6) làm suy thoái tài nguyên rừng."
+            },
+            {
+                id: 11,
+                part: 1,
+                question: "Sản phẩm nào dưới đây được chế biến từ sản phẩm trồng trọt?",
+                options: [
+                    "Tinh bột sắn.",
+                    "Sữa chua.",
+                    "Ruốc thịt.",
+                    "Lông vũ."
+                ],
+                answer: "A",
+                explanation: "Tinh bột sắn được chế biến từ củ sắn (khoai mì) - một sản phẩm của ngành trồng trọt."
+            },
+            {
+                id: 12,
+                part: 1,
+                question: "Loại cây nào dưới đây thuộc loại cây nông nghiệp hàng năm?",
+                options: [
+                    "Vải thiều.",
+                    "Cao su.",
+                    "Lạc.",
+                    "Cà phê."
+                ],
+                answer: "C",
+                explanation: "Lạc (đậu phụng) có chu kỳ sinh trưởng hoàn tất trong vòng một mùa vụ (dưới 1 năm)."
+            },
+            {
+                id: 13,
+                part: 1,
+                question: "Nhận định nào dưới đây là đúng về quy luật sinh trưởng, phát triển của cây rừng?",
+                options: [
+                    "Cây rừng có khả năng ra hoa kết quả ngay trong giai đoạn non.",
+                    "Cây rừng ra hoa, kết quả đạt số lượng nhiều và chất lượng cao nhất ở giai đoạn gần thành thục.",
+                    "Sinh trưởng chậm lại, tán cây định hình năng suất và chất lượng ổn định, ra hoa đậu quả mạnh nhất ở giai đoạn thành thục.",
+                    "Cây rừng bắt đầu ra hoa kết quả là dấu hiệu giai đoạn thành thục của cây."
+                ],
+                answer: "C",
+                explanation: "Ở giai đoạn thành thục, cây rừng đạt độ phát triển tối đa về cấu trúc tán, tăng trưởng chiều cao chậm lại và năng suất sinh sản (hoa, quả) đạt mức cao nhất."
+            },
+            {
+                id: 14,
+                part: 1,
+                question: "Khi độ pH nước ao nhỏ hơn 6, biện pháp xử lý phù hợp là gì?",
+                options: [
+                    "Thay toàn bộ nước trong ao.",
+                    "Thêm phân chuồng vào ao.",
+                    "Thả thêm thực vật thủy sinh trong ao.",
+                    "Bón vôi để nâng độ pH phù hợp."
+                ],
+                answer: "D",
+                explanation: "pH < 6 nghĩa là nước ao bị chua/acid. Bón vôi (CaCO3 hoặc Ca(OH)2) có tính kiềm giúp trung hòa acid và nâng độ pH lên mức tối thích (6.5 - 8.5)."
+            },
+            {
+                id: 15,
+                part: 1,
+                question: "Vì sao thức ăn thủy sản giữ vai trò quan trọng trong nuôi thủy sản?",
+                options: [
+                    "Giúp nước trong ao nuôi luôn sạch và vệ sinh.",
+                    "Cung cấp dinh dưỡng cho vật nuôi phát triển, ảnh hưởng trực tiếp đến năng suất và chất lượng của thủy sản.",
+                    "Giúp vật nuôi tăng sức đề kháng.",
+                    "Tăng khả năng sinh sản của thủy sản."
+                ],
+                answer: "B",
+                explanation: "Thức ăn chiếm tới 50-70% chi phí nuôi, cung cấp chất năng lượng và nguyên liệu kiến tạo cơ thể giúp thủy sản lớn nhanh."
+            },
+            {
+                id: 16,
+                part: 1,
+                question: "Nhận định nào sau đây là đúng khi nói về “Phân loại các nhóm thuỷ sản”?",
+                options: [
+                    "Cá hồi vân, cá tầm, cá chép, cá quả, cá rô phi là nhóm sống ở vùng ôn đới nước lạnh.",
+                    "Dựa vào đặc điểm cấu tạo, có thể phân loại thuỷ sản thành 3 nhóm là nhóm cá, nhóm bò sát, nhóm nhuyễn thể.",
+                    "Những loài thuỷ sản ăn thức ăn là động vật, thực vật và mùn bã hữu cơ thuộc nhóm thuỷ sản ăn thịt.",
+                    "Thuỷ sản bản địa là những loài thuỷ sản có nguồn gốc và phân bố trong môi trường tự nhiên ở khu vực địa lí xác định."
+                ],
+                answer: "D",
+                explanation: "Thủy sản bản địa (native species) là loài xuất hiện tự nhiên và phát triển tại vùng sinh thái cụ thể đó."
+            },
+            {
+                id: 17,
+                part: 1,
+                question: "Nhiệm vụ hàng đầu trong công tác bảo vệ rừng là gì?",
+                options: [
+                    "Xây dựng đội ngũ quản lí rừng phù hợp.",
+                    "Khai thác gỗ hợp lý.",
+                    "Ngăn chặn cháy rừng và khai thác rừng trái phép.",
+                    "Tuyên truyền, bảo vệ động vật quý hiếm trong rừng."
+                ],
+                answer: "C",
+                explanation: "Phòng cháy chữa cháy rừng và chống chặt phá rừng trái phép là nhiệm vụ cấp bách hàng đầu để bảo vệ hiện trạng tài nguyên rừng."
+            },
+            {
+                id: 18,
+                part: 1,
+                question: "Loại thức ăn nào sau đây thuộc nhóm thức ăn thô khô?",
+                options: [
+                    "Bột cá",
+                    "Cám gạo",
+                    "Rơm",
+                    "Cỏ voi"
+                ],
+                answer: "C",
+                explanation: "Rơm lúa phơi khô có tỷ lệ xơ thô cao (>18%), thuộc nhóm thức ăn thô khô dành cho gia súc ăn cỏ."
+            },
+            {
+                id: 19,
+                part: 1,
+                question: "Một ao nuôi cá có diện tích 1 ha. Thả cá rô phi mật độ 20.000 con/ha. Sau 6 tháng nuôi, tỷ lệ sống là 85%. Tính số lượng cá sống còn trong ao?",
+                options: [
+                    "17.500 con.",
+                    "17.000 con.",
+                    "19.000 con.",
+                    "17.200 con."
+                ],
+                answer: "B",
+                explanation: "Số lượng cá sống = Mật độ x Diện tích x Tỷ lệ sống = 20.000 x 1 x 85% = 17.000 con."
+            },
+            {
+                id: 20,
+                part: 1,
+                question: "Phát biểu nào sai khi nói về xu hướng phát triển của thuỷ sản ở Việt Nam và trên thế giới?",
+                options: [
+                    "Áp dụng công nghệ cao để phát triển bền vững.",
+                    "Phát triển bền vững gắn với bảo vệ nguồn lợi thủy sản.",
+                    "Hướng tới nuôi trồng theo tiêu chuẩn VietGAP.",
+                    "Phát triển thủy sản bền vững cần giảm tỷ lệ nuôi, tăng tỷ lệ khai thác thủy sản."
+                ],
+                answer: "D",
+                explanation: "Xu hướng hiện nay là giảm khai thác tự nhiên (tránh cạn kiệt nguồn lợi) và tăng cường nuôi trồng bền vững ứng dụng công nghệ cao."
+            },
+            {
+                id: 21,
+                part: 1,
+                question: "Vì sao phải chọn giống tốt trong nuôi thủy sản?",
+                options: [
+                    "Để rút ngắn thời gian nuôi và tăng hiệu quả kinh tế.",
+                    "Để giảm số lượng thủy sản trong ao nuôi.",
+                    "Để giảm chi phí đầu tư trong nuôi thủy sản.",
+                    "Để giảm số lượng nước trong ao nuôi."
+                ],
+                answer: "A",
+                explanation: "Con giống tốt giúp cá/tôm nhanh lớn, đồng đều, ít bệnh tật, rút ngắn chu kỳ nuôi và nâng cao lợi nhuận."
+            },
+            {
+                id: 22,
+                part: 1,
+                question: "Biện pháp nào sau đây không phải là kĩ thuật chăm sóc rừng sau khi trồng?",
+                options: [
+                    "Tỉa cành.",
+                    "Chặt phá rừng.",
+                    "Làm cỏ.",
+                    "Bón phân."
+                ],
+                answer: "B",
+                explanation: "Chặt phá rừng là hành vi xâm hại, không phải kỹ thuật lâm sinh chăm sóc rừng."
+            },
+            {
+                id: 23,
+                part: 1,
+                question: "Thống kê diện tích ba loại rừng (đặc dụng, phòng hộ, sản xuất) giai đoạn 2007 - 2022 thu được kết quả như hình mô tả bên dưới. Anh (chị) hãy lựa chọn biện pháp để phát triển rừng bền vững?",
+                imageSvg: `<svg class="w-full max-w-lg mx-auto my-2 rounded-lg border border-slate-200 bg-slate-50 p-2" viewBox="0 0 500 220">
+                    <rect width="100%" height="100%" fill="#f8fafc"/>
+                    <text x="250" y="20" font-size="12" font-weight="bold" text-anchor="middle" fill="#1e293b">Diện tích trồng rừng ở nước ta (2007 - 2022) [Triệu ha]</text>
+                    <!-- Group 1 Total -->
+                    <rect x="30" y="110" width="15" height="60" fill="#ea580c"/><rect x="47" y="90" width="15" height="80" fill="#eab308"/><rect x="64" y="60" width="15" height="110" fill="#22c55e"/><rect x="81" y="40" width="15" height="130" fill="#78350f"/>
+                    <text x="60" y="185" font-size="10" text-anchor="middle" font-weight="bold">Tổng diện tích</text>
+                    <!-- Group 2 Dac dung -->
+                    <rect x="150" y="165" width="12" height="5" fill="#ea580c"/><rect x="164" y="165" width="12" height="5" fill="#eab308"/><rect x="178" y="165" width="12" height="5" fill="#22c55e"/><rect x="192" y="165" width="12" height="5" fill="#78350f"/>
+                    <text x="175" y="185" font-size="10" text-anchor="middle" font-weight="bold">Đặc dụng</text>
+                    <!-- Group 3 Phong ho -->
+                    <rect x="250" y="150" width="12" height="20" fill="#ea580c"/><rect x="264" y="150" width="12" height="20" fill="#eab308"/><rect x="278" y="145" width="12" height="25" fill="#22c55e"/><rect x="292" y="150" width="12" height="20" fill="#78350f"/>
+                    <text x="275" y="185" font-size="10" text-anchor="middle" font-weight="bold">Phòng hộ</text>
+                    <!-- Group 4 San xuat -->
+                    <rect x="350" y="125" width="15" height="45" fill="#ea580c"/><rect x="367" y="110" width="15" height="60" fill="#eab308"/><rect x="384" y="95" width="15" height="75" fill="#22c55e"/><rect x="401" y="70" width="15" height="100" fill="#78350f"/>
+                    <text x="380" y="185" font-size="10" text-anchor="middle" font-weight="bold">Sản xuất</text>
+                    <!-- Baseline -->
+                    <line x1="20" y1="170" x2="470" y2="170" stroke="#64748b" stroke-width="1.5"/>
+                </svg>`,
+                options: [
+                    "Tiếp tục duy trì tình trạng trồng rừng sản xuất như biểu đồ trên.",
+                    "Cần chú trọng trồng để tăng diện tích rừng đặc dụng và rừng phòng hộ.",
+                    "Không cần tăng cường trồng rừng đặc dụng vì tình trạng giai đoạn 2007-2022 đã hợp lý.",
+                    "Chỉ cần chú trọng trồng rừng sản xuất để cung cấp lâm sản."
+                ],
+                answer: "B",
+                explanation: "Biểu đồ cho thấy diện tích rừng đặc dụng và phòng hộ tăng rất chậm hoặc chững lại, trong khi rừng sản xuất tăng nhanh. Do đó cần chú trọng tăng cường rừng đặc dụng và phòng hộ để bảo vệ môi trường và sinh thái."
+            },
+            {
+                id: 24,
+                part: 1,
+                question: "Vì sao nuôi thuỷ sản ven biển, hải đảo lại góp phần đảm bảo chủ quyền và an ninh Quốc gia?",
+                options: [
+                    "Vì người dân có thể nuôi trồng, đánh bắt thuỷ sản ngoài phạm vi lãnh thổ Quốc gia mình.",
+                    "Vì người dân chỉ được nuôi trồng, đánh bắt thủy sản trong phạm vi lãnh thổ của Quốc gia mình.",
+                    "Vì người dân không thể nuôi trồng, đánh bắt thuỷ sản trong phạm vi lãnh thổ Quốc gia mình.",
+                    "Vì người dân có thể nuôi trồng, đánh bắt thuỷ sản trong lẫn ngoài phạm vi lãnh thổ."
+                ],
+                answer: "B",
+                explanation: "Sự có mặt định cư lao động, bám biển nuôi trồng hải sản của ngư dân trên các vùng biển, đảo thuộc phạm vi chủ quyền khẳng định sự hiện diện và giữ vững an ninh biên giới biển đảo quốc gia."
+            },
+
+            // PART II: TRUE / FALSE (4 Questions with a,b,c,d sub-items)
+            {
+                id: 25,
+                part: 2,
+                question: "Câu 1 (Phần II): Để cây rừng sinh trưởng phát triển tốt cần phải có biện pháp cơ bản.",
+                items: [
+                    { key: "a", text: "Chọn giống phù hợp với từng vùng sinh thái ở từng địa phương.", correct: true },
+                    { key: "b", text: "Trồng cây với mật độ càng dày càng tốt.", correct: false },
+                    { key: "c", text: "Làm đất kỹ thuật trước khi trồng rừng.", correct: true },
+                    { key: "d", text: "Không cần chăm sóc sau khi trồng rừng.", correct: false }
+                ],
+                explanation: "Mật độ trồng phải theo đúng tiêu chuẩn lâm sinh (dày quá gây cạnh tranh ánh sáng). Rừng trồng bắt buộc phải được chăm sóc 3-5 năm đầu."
+            },
+            {
+                id: 26,
+                part: 2,
+                question: "Câu 2 (Phần II): Vào buổi sáng mùa hè, Bác A đi kiểm tra ao nuôi cá Rô phi. Bác quan sát thấy có một số con cá bơi lờ đờ, bỏ ăn, lồi mắt, xuất huyết ở gốc vây. Bác A có một số nhận định và sẽ xử lý như sau:",
+                items: [
+                    { key: "a", text: "Bệnh do liên cầu khuẩn Gram dương Streptococcus agalactiae gây ra.", correct: true },
+                    { key: "b", text: "Tỉ lệ chết của cá trong ao nuôi nhiễm bệnh có thể từ 30% đến 70%, có trường hợp 100% nếu không điều trị kịp thời.", correct: true },
+                    { key: "c", text: "Cá chết do nhiễm bệnh không phải thu gom và xử lí theo quy định vì rất tốn kém.", correct: false },
+                    { key: "d", text: "Vào những thời điểm nắng nóng, cho cá ăn bổ sung Betaglucan, vitamin C, hạ nhiệt độ hệ thống nuôi, duy trì chất lượng nước phù hợp.", correct: true }
+                ],
+                explanation: "Cá chết bệnh bắt buộc phải thu gom vớt bỏ và tiêu hủy đúng quy trình để tránh lây lan mầm bệnh dịch rộng ra môi trường xung quanh."
+            },
+            {
+                id: 27,
+                part: 2,
+                question: "Câu 3 (Phần II): Lợi ích của nuôi thuỷ sản theo tiêu chuẩn VietGAP đối với cơ sở nuôi là:",
+                items: [
+                    { key: "a", text: "Tăng chi phí sản xuất đầu tư trong nuôi trồng thủy sản.", correct: false },
+                    { key: "b", text: "Làm việc trong môi trường an toàn đảm bảo vệ sinh, nâng cao kĩ năng lao động.", correct: true },
+                    { key: "c", text: "Biết rõ nguồn gốc thực phẩm, công bằng trong việc lựa chọn thực phẩm an toàn.", correct: true },
+                    { key: "d", text: "Có nguồn nguyên liệu đảm bảo, giảm chi phí kiểm tra, có cơ hội xuất khẩu.", correct: true }
+                ],
+                explanation: "Áp dụng VietGAP giúp tối ưu hóa chi phí dài hạn, quản lý dịch bệnh hiệu quả chứ không phải là yếu tố tăng chi phí tiêu cực."
+            },
+            {
+                id: 28,
+                part: 2,
+                question: "Câu 4 (Phần II): Dưới đây là bảng yêu cầu về nhiệt độ nước nuôi của một số loài động vật thủy sản nuôi phổ biến:\n" + 
+                           "• Cá rô phi: Giới hạn 10–39°C | Thích hợp 25–30°C\n" +
+                           "• Cá tầm: Giới hạn 5–31°C | Thích hợp 18–25°C\n" +
+                           "• Tôm càng xanh: Giới hạn 22–33°C | Thích hợp 28–30°C\n" +
+                           "Căn cứ vào bảng số liệu, nhóm học sinh đưa ra các nhận định:",
+                items: [
+                    { key: "a", text: "Cá rô phi sinh trưởng phù hợp ở nhiệt độ từ 25°C đến 30°C.", correct: true },
+                    { key: "b", text: "Cá tầm chịu lạnh tốt hơn tôm càng xanh.", correct: true },
+                    { key: "c", text: "Nhiệt độ môi trường ảnh hưởng đến hô hấp, tiêu hóa vì hầu hết ĐVTS là động vật hằng nhiệt.", correct: false },
+                    { key: "d", text: "Các loài thủy sản đều yêu cầu nhiệt độ giống nhau.", correct: false }
+                ],
+                explanation: "Đa số thủy sản (cá, tôm, cua) là động vật BIẾN NHIỆT (thay đổi theo nhiệt độ nước), không phải hằng nhiệt. Mỗi loài có giới hạn chịu nhiệt khác nhau."
+            }
+        ];
+
+        // APP GLOBAL STATE MANAGEMENT
+        let appState = {
+            student: { name: '', class: '', school: '', sbd: '' },
+            examStatus: 'START', // 'START', 'EXAM', 'RESULT', 'TEACHER'
+            currentIdx: 0,
+            userAnswers: {}, // Format: { 1: 'A', 25: { a: true, b: false } }
+            flaggedQuestions: {}, // Format: { 1: true }
+            timer: 50 * 60, // 50 minutes in seconds
+            timerInterval: null,
+            startTime: null,
+            endTime: null,
+            history: []
+        };
+
+        let scoreChartInstance = null;
+
+        window.onload = function() {
+            loadHistoryFromStorage();
+            initPalette();
+            renderView();
+        };
+
+        // LOCALSTORAGE HELPERS
+        function loadHistoryFromStorage() {
+            try {
+                const stored = localStorage.getItem('thpt_agri_exam_history');
+                if (stored) {
+                    appState.history = JSON.parse(stored);
+                }
+            } catch (e) {
+                console.error('Failed to load history', e);
+            }
+        }
+
+        function saveHistoryToStorage() {
+            try {
+                localStorage.setItem('thpt_agri_exam_history', JSON.stringify(appState.history));
+            } catch (e) {
+                console.error('Failed to save history', e);
+            }
+        }
+
+        function renderView() {
+            document.getElementById('view-start').classList.add('hidden');
+            document.getElementById('view-exam').classList.add('hidden');
+            document.getElementById('view-result').classList.add('hidden');
+            document.getElementById('view-teacher').classList.add('hidden');
+            document.getElementById('header-timer').classList.add('hidden');
+
+            if (appState.examStatus === 'START') {
+                document.getElementById('view-start').classList.remove('hidden');
+            } else if (appState.examStatus === 'EXAM') {
+                document.getElementById('view-exam').classList.remove('hidden');
+                document.getElementById('header-timer').classList.remove('hidden');
+                renderCurrentQuestion();
+                updatePaletteUI();
+                updateExamStats();
+            } else if (appState.examStatus === 'RESULT') {
+                document.getElementById('view-result').classList.remove('hidden');
+            } else if (appState.examStatus === 'TEACHER') {
+                document.getElementById('view-teacher').classList.remove('hidden');
+                renderTeacherDashboard();
+            }
+        }
+
+        function handleStartExam(e) {
+            e.preventDefault();
+            const name = document.getElementById('input-fullname').value.trim();
+            const cls = document.getElementById('input-class').value.trim();
+            const school = document.getElementById('input-school').value.trim();
+            const sbd = document.getElementById('input-sbd').value.trim() || 'N/A';
+
+            if (!name || !cls || !school) {
+                alert('Vui lòng điền đầy đủ các thông tin bắt buộc (*)');
+                return;
+            }
+
+            appState.student = { name, class: cls, school, sbd };
+            appState.examStatus = 'EXAM';
+            appState.currentIdx = 0;
+            appState.userAnswers = {};
+            appState.flaggedQuestions = {};
+            appState.timer = 50 * 60;
+            appState.startTime = new Date();
+
+            // Update user info in header/exam screen
+            document.getElementById('exam-student-name').innerText = name;
+            document.getElementById('exam-student-meta').innerText = `Lớp: ${cls} | Trường: ${school}`;
+            document.getElementById('exam-user-avatar').innerText = name.split(' ').pop().substring(0, 2).toUpperCase();
+
+            startTimer();
+            renderView();
+        }
+
+        function startTimer() {
+            clearInterval(appState.timerInterval);
+            updateTimerDisplay();
+
+            appState.timerInterval = setInterval(() => {
+                appState.timer--;
+                updateTimerDisplay();
+
+                if (appState.timer <= 0) {
+                    clearInterval(appState.timerInterval);
+                    alert('Đã hết thời gian 50 phút làm bài! Hệ thống sẽ tự động nộp bài.');
+                    executeSubmitExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(appState.timer / 60);
+            const seconds = appState.timer % 60;
+            const formatted = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const timerEl = document.getElementById('timer-display');
+            timerEl.innerText = formatted;
+
+            // Timer color warning threshold
+            if (appState.timer <= 300) { // < 5 mins
+                timerEl.className = "font-mono font-bold text-lg text-rose-400 animate-bounce";
+            } else if (appState.timer <= 600) { // < 10 mins
+                timerEl.className = "font-mono font-bold text-lg text-amber-300";
+            } else {
+                timerEl.className = "font-mono font-bold text-lg text-yellow-300";
+            }
+        }
+
+        function initPalette() {
+            const p1 = document.getElementById('palette-part-1');
+            const p2 = document.getElementById('palette-part-2');
+            p1.innerHTML = '';
+            p2.innerHTML = '';
+
+            examQuestions.forEach((q, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `palette-btn-${idx}`;
+                btn.onclick = () => jumpToQuestion(idx);
+                btn.className = "question-btn h-9 rounded-lg font-bold text-xs flex items-center justify-center border transition";
+                btn.innerText = idx + 1;
+
+                if (q.part === 1) {
+                    p1.appendChild(btn);
+                } else {
+                    p2.appendChild(btn);
+                }
+            });
+        }
+
+        function renderCurrentQuestion() {
+            const q = examQuestions[appState.currentIdx];
+            const container = document.getElementById('question-container');
+            
+            // Flag button status
+            const isFlagged = !!appState.flaggedQuestions[q.id];
+            const flagBtn = document.getElementById('btn-flag-q');
+            if (isFlagged) {
+                flagBtn.className = "bg-amber-500 text-white border border-amber-600 px-3 py-1.5 rounded-lg transition flex items-center";
+                document.getElementById('flag-text').innerText = "Đã đánh dấu";
+            } else {
+                flagBtn.className = "bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition flex items-center";
+                document.getElementById('flag-text').innerText = "Đánh dấu";
+            }
+
+            let html = `
+                <div class="animate-fade-in space-y-4">
+                    <div class="inline-block px-2.5 py-1 bg-agri-100 text-agri-800 rounded-lg text-xs font-bold uppercase tracking-wide">
+                        Câu ${appState.currentIdx + 1} / 28 ${q.part === 1 ? '(Trắc nghiệm)' : '(Đúng / Sai)'}
+                    </div>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-800 leading-relaxed">${q.question}</h3>
+            `;
+
+            if (q.imageSvg) {
+                html += q.imageSvg;
+            }
+
+            if (q.part === 1) {
+                // MCQ Render
+                const currentAns = appState.userAnswers[q.id];
+                html += `<div class="space-y-2.5 mt-4">`;
+                const labels = ['A', 'B', 'C', 'D'];
+                q.options.forEach((opt, oIdx) => {
+                    const label = labels[oIdx];
+                    const isSelected = currentAns === label;
+                    html += `
+                        <label onclick="selectMCQAnswer('${q.id}', '${label}')" 
+                            class="flex items-start p-3.5 rounded-xl border-2 cursor-pointer transition ${isSelected ? 'border-agri-600 bg-emerald-50/70 shadow-sm' : 'border-slate-200 hover:border-slate-300 bg-white'}">
+                            <input type="radio" name="mcq-${q.id}" value="${label}" ${isSelected ? 'checked' : ''} class="hidden">
+                            <span class="w-7 h-7 rounded-lg border-2 font-bold text-xs flex items-center justify-center mr-3 shrink-0 ${isSelected ? 'bg-agri-600 text-white border-agri-600' : 'border-slate-300 text-slate-500'}">
+                                ${label}
+                            </span>
+                            <span class="text-sm font-medium text-slate-700 pt-0.5">${opt}</span>
+                        </label>
+                    `;
+                });
+                html += `</div>`;
+            } else {
+                // True / False Render
+                const subAnswers = appState.userAnswers[q.id] || {};
+                html += `
+                    <div class="mt-4 border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                        <table class="w-full text-left text-xs sm:text-sm">
+                            <thead class="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                                <tr>
+                                    <th class="p-3">Ý lựa chọn</th>
+                                    <th class="p-3 text-center w-20">ĐÚNG</th>
+                                    <th class="p-3 text-center w-20">SAI</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 bg-white">
+                `;
+
+                q.items.forEach((item) => {
+                    const userChoice = subAnswers[item.key];
+                    html += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 font-medium text-slate-700"><strong>${item.key})</strong> ${item.text}</td>
+                            <td class="p-3 text-center">
+                                <button onclick="selectTFAnswer(${q.id}, '${item.key}', true)" 
+                                    class="w-10 h-10 rounded-lg border font-bold text-xs transition ${userChoice === true ? 'bg-emerald-600 text-white border-emerald-600 shadow' : 'bg-slate-100 border-slate-300 text-slate-500 hover:bg-slate-200'}">
+                                    Đ
+                                </button>
+                            </td>
+                            <td class="p-3 text-center">
+                                <button onclick="selectTFAnswer(${q.id}, '${item.key}', false)" 
+                                    class="w-10 h-10 rounded-lg border font-bold text-xs transition ${userChoice === false ? 'bg-rose-600 text-white border-rose-600 shadow' : 'bg-slate-100 border-slate-300 text-slate-500 hover:bg-slate-200'}">
+                                    S
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+
+            // Nav state update
+            document.getElementById('btn-prev').disabled = appState.currentIdx === 0;
+            document.getElementById('btn-prev').style.opacity = appState.currentIdx === 0 ? "0.5" : "1";
+            document.getElementById('btn-next').disabled = appState.currentIdx === examQuestions.length - 1;
+            document.getElementById('btn-next').style.opacity = appState.currentIdx === examQuestions.length - 1 ? "0.5" : "1";
+        }
+
+        function selectMCQAnswer(qId, optionLabel) {
+            appState.userAnswers[qId] = optionLabel;
+            renderCurrentQuestion();
+            updatePaletteUI();
+            updateExamStats();
+        }
+
+        function selectTFAnswer(qId, itemKey, boolVal) {
+            if (!appState.userAnswers[qId]) {
+                appState.userAnswers[qId] = {};
+            }
+            appState.userAnswers[qId][itemKey] = boolVal;
+            renderCurrentQuestion();
+            updatePaletteUI();
+            updateExamStats();
+        }
+
+        function toggleFlagCurrentQuestion() {
+            const q = examQuestions[appState.currentIdx];
+            if (appState.flaggedQuestions[q.id]) {
+                delete appState.flaggedQuestions[q.id];
+            } else {
+                appState.flaggedQuestions[q.id] = true;
+            }
+            renderCurrentQuestion();
+            updatePaletteUI();
+            updateExamStats();
+        }
+
+        function prevQuestion() {
+            if (appState.currentIdx > 0) {
+                appState.currentIdx--;
+                renderCurrentQuestion();
+                updatePaletteUI();
+            }
+        }
+
+        function nextQuestion() {
+            if (appState.currentIdx < examQuestions.length - 1) {
+                appState.currentIdx++;
+                renderCurrentQuestion();
+                updatePaletteUI();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            appState.currentIdx = idx;
+            renderCurrentQuestion();
+            updatePaletteUI();
+        }
+
+        function isQuestionAnswered(q) {
+            const ans = appState.userAnswers[q.id];
+            if (q.part === 1) {
+                return ans !== undefined && ans !== null;
+            } else {
+                if (!ans) return false;
+                // Part II requires at least one choice to mark started or all 4 for fully done
+                return Object.keys(ans).length === 4;
+            }
+        }
+
+        function updatePaletteUI() {
+            examQuestions.forEach((q, idx) => {
+                const btn = document.getElementById(`palette-btn-${idx}`);
+                if (!btn) return;
+
+                const isCurrent = idx === appState.currentIdx;
+                const isAnswered = isQuestionAnswered(q);
+                const isFlagged = !!appState.flaggedQuestions[q.id];
+
+                btn.className = "question-btn h-9 rounded-lg font-bold text-xs flex items-center justify-center border transition relative ";
+
+                if (isCurrent) {
+                    btn.classList.add("ring-2", "ring-offset-2", "ring-agri-600");
+                }
+
+                if (isFlagged) {
+                    btn.classList.add("bg-amber-500", "text-white", "border-amber-600");
+                } else if (isAnswered) {
+                    btn.classList.add("bg-agri-600", "text-white", "border-agri-700");
+                } else {
+                    btn.classList.add("bg-slate-100", "text-slate-700", "border-slate-300", "hover:bg-slate-200");
+                }
+            });
+        }
+
+        function updateExamStats() {
+            let answeredCount = 0;
+            examQuestions.forEach(q => {
+                if (isQuestionAnswered(q)) answeredCount++;
+            });
+
+            const total = examQuestions.length;
+            const unanswered = total - answeredCount;
+            const flagged = Object.keys(appState.flaggedQuestions).length;
+
+            document.getElementById('exam-progress-text').innerText = `${answeredCount}/${total}`;
+            document.getElementById('exam-progress-bar').style.width = `${(answeredCount / total) * 100}%`;
+
+            document.getElementById('stat-answered-count').innerText = `${answeredCount} câu`;
+            document.getElementById('stat-unanswered-count').innerText = `${unanswered} câu`;
+            document.getElementById('stat-flagged-count').innerText = `${flagged} câu`;
+        }
+
+        function confirmSubmitExam() {
+            let answeredCount = 0;
+            examQuestions.forEach(q => { if (isQuestionAnswered(q)) answeredCount++; });
+            const total = examQuestions.length;
+
+            document.getElementById('modal-sub-done').innerText = `${answeredCount} câu`;
+            document.getElementById('modal-sub-undone').innerText = `${total - answeredCount} câu`;
+            document.getElementById('modal-submit').classList.remove('hidden');
+        }
+
+        function confirmResetExam() {
+            document.getElementById('modal-reset').classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+        }
+
+        function executeResetExam() {
+            closeModal('modal-reset');
+            appState.userAnswers = {};
+            appState.flaggedQuestions = {};
+            appState.currentIdx = 0;
+            appState.timer = 50 * 60;
+            startTimer();
+            renderCurrentQuestion();
+            updatePaletteUI();
+            updateExamStats();
+        }
+
+        function executeSubmitExam() {
+            closeModal('modal-submit');
+            clearInterval(appState.timerInterval);
+            appState.endTime = new Date();
+
+            // Calculate Score based on Ministry Guidelines:
+            // Part 1: 24 questions x 0.25 pt = 6.0 pts
+            // Part 2: 4 questions x 1.0 pt max = 4.0 pts (1 sub = 0.1, 2 sub = 0.25, 3 sub = 0.5, 4 sub = 1.0)
+            let totalScore = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+
+            const answerDetails = [];
+
+            examQuestions.forEach(q => {
+                if (q.part === 1) {
+                    const userChoice = appState.userAnswers[q.id];
+                    const isCorrect = userChoice === q.answer;
+                    if (isCorrect) {
+                        totalScore += 0.25;
+                        correctCount++;
+                    } else if (userChoice) {
+                        incorrectCount++;
+                    }
+                    answerDetails.push({ question: q, userChoice, isCorrect, scoreEarned: isCorrect ? 0.25 : 0 });
+                } else {
+                    // Part 2 True / False Sub-scoring
+                    const userSubChoices = appState.userAnswers[q.id] || {};
+                    let subCorrectCount = 0;
+
+                    q.items.forEach(item => {
+                        const userVal = userSubChoices[item.key];
+                        if (userVal === item.correct) {
+                            subCorrectCount++;
+                        }
+                    });
+
+                    let part2Score = 0;
+                    if (subCorrectCount === 1) part2Score = 0.1;
+                    else if (subCorrectCount === 2) part2Score = 0.25;
+                    else if (subCorrectCount === 3) part2Score = 0.5;
+                    else if (subCorrectCount === 4) part2Score = 1.0;
+
+                    totalScore += part2Score;
+                    if (subCorrectCount === 4) correctCount++;
+                    else incorrectCount++;
+
+                    answerDetails.push({ question: q, userSubChoices, subCorrectCount, scoreEarned: part2Score });
+                }
+            });
+
+            const finalScore = Math.round(totalScore * 100) / 100;
+            const timeTakenSec = 50 * 60 - appState.timer;
+            const timeTakenFormatted = `${Math.floor(timeTakenSec / 60)} phút ${timeTakenSec % 60} giây`;
+
+            // Save Attempt to History List
+            const attemptRecord = {
+                id: Date.now(),
+                name: appState.student.name,
+                class: appState.student.class,
+                school: appState.student.school,
+                sbd: appState.student.sbd,
+                score: finalScore,
+                timeTaken: timeTakenFormatted,
+                timestamp: new Date().toLocaleString('vi-VN'),
+                status: 'Đã nộp'
+            };
+
+            appState.history.unshift(attemptRecord);
+            saveHistoryToStorage();
+
+            // Render Results View
+            renderResultsView(finalScore, correctCount, incorrectCount, timeTakenFormatted, answerDetails);
+            appState.examStatus = 'RESULT';
+            renderView();
+        }
+
+        function renderResultsView(score, correct, incorrect, timeSpent, details) {
+            document.getElementById('result-student-name').innerText = appState.student.name;
+            document.getElementById('result-student-meta').innerText = `Lớp: ${appState.student.class} | Trường: ${appState.student.school}`;
+            document.getElementById('result-score-number').innerText = score.toFixed(2);
+
+            // Grade Classification
+            let grade = 'Trung bình';
+            if (score >= 9.0) grade = 'Xuất sắc 🌟';
+            else if (score >= 8.0) grade = 'Giỏi 🥇';
+            else if (score >= 6.5) grade = 'Khá 👍';
+            else if (score >= 5.0) grade = 'Trung bình 📚';
+            else grade = 'Cần cố gắng 💡';
+
+            document.getElementById('result-grade-badge').innerText = `Xếp loại: ${grade}`;
+            document.getElementById('res-stat-correct').innerText = `${correct}/28`;
+            document.getElementById('res-stat-incorrect').innerText = `${incorrect}/28`;
+            document.getElementById('res-stat-time').innerText = timeSpent;
+            document.getElementById('res-stat-accuracy').innerText = `${Math.round((correct / 28) * 100)}%`;
+
+            // Render Detailed Answer List
+            const container = document.getElementById('result-answer-list');
+            container.innerHTML = '';
+
+            details.forEach((item, idx) => {
+                const q = item.question;
+                const card = document.createElement('div');
+                card.className = "p-4 sm:p-5 rounded-2xl border bg-slate-50 space-y-3";
+
+                if (q.part === 1) {
+                    const isCorrect = item.isCorrect;
+                    card.classList.add(isCorrect ? "border-emerald-300" : "border-rose-300");
+
+                    let choicesHtml = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">`;
+                    q.options.forEach((opt, oIdx) => {
+                        const label = ['A', 'B', 'C', 'D'][oIdx];
+                        const isUserSelected = item.userChoice === label;
+                        const isCorrectAns = q.answer === label;
+
+                        let style = "bg-white border-slate-200 text-slate-700";
+                        if (isCorrectAns) style = "bg-emerald-100 border-emerald-400 text-emerald-900 font-bold";
+                        if (isUserSelected && !isCorrectAns) style = "bg-rose-100 border-rose-400 text-rose-900 line-through";
+
+                        choicesHtml += `
+                            <div class="p-2.5 rounded-xl border text-xs flex items-center justify-between ${style}">
+                                <span><strong>${label}.</strong> ${opt}</span>
+                                ${isCorrectAns ? '<i class="fa-solid fa-check text-emerald-600"></i>' : ''}
+                                ${isUserSelected && !isCorrectAns ? '<i class="fa-solid fa-xmark text-rose-600"></i>' : ''}
+                            </div>
+                        `;
+                    });
+                    choicesHtml += `</div>`;
+
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                Câu ${idx + 1}: ${isCorrect ? 'ĐÚNG (+0.25đ)' : 'SAI (0.0đ)'}
+                            </span>
+                            <span class="text-xs text-slate-500">Đáp án chọn: <strong>${item.userChoice || 'Bỏ trống'}</strong> | Đúng: <strong class="text-emerald-700">${q.answer}</strong></span>
+                        </div>
+                        <p class="font-bold text-sm text-slate-800">${q.question}</p>
+                        ${choicesHtml}
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 text-xs text-slate-600 mt-2">
+                            <strong class="text-agri-700"><i class="fa-solid fa-lightbulb mr-1"></i> Giải thích:</strong> ${q.explanation}
+                        </div>
+                    `;
+                } else {
+                    // Part II Review
+                    card.classList.add(item.subCorrectCount === 4 ? "border-emerald-300" : "border-amber-300");
+
+                    let subTableHtml = `
+                        <table class="w-full text-xs text-left mt-2 bg-white rounded-xl overflow-hidden border">
+                            <thead class="bg-slate-100 font-bold text-slate-700">
+                                <tr>
+                                    <th class="p-2">Ý</th>
+                                    <th class="p-2 text-center">Lựa chọn</th>
+                                    <th class="p-2 text-center">Đáp án đúng</th>
+                                    <th class="p-2 text-center">Kết quả</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                    `;
+
+                    q.items.forEach(sub => {
+                        const userVal = item.userSubChoices ? item.userSubChoices[sub.key] : undefined;
+                        const isSubCorrect = userVal === sub.correct;
+
+                        subTableHtml += `
+                            <tr>
+                                <td class="p-2 font-medium"><strong>${sub.key})</strong> ${sub.text}</td>
+                                <td class="p-2 text-center font-bold">${userVal === true ? 'Đúng' : userVal === false ? 'Sai' : 'Chưa chọn'}</td>
+                                <td class="p-2 text-center font-bold text-emerald-700">${sub.correct ? 'Đúng' : 'Sai'}</td>
+                                <td class="p-2 text-center">${isSubCorrect ? '✅' : '❌'}</td>
+                            </tr>
+                        `;
+                    });
+
+                    subTableHtml += `</tbody></table>`;
+
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-teal-100 text-teal-800">
+                                Câu ${idx + 1} (Đúng/Sai): Đúng ${item.subCorrectCount}/4 ý (+${item.scoreEarned}đ)
+                            </span>
+                        </div>
+                        <p class="font-bold text-sm text-slate-800">${q.question}</p>
+                        ${subTableHtml}
+                        <div class="bg-white p-3 rounded-xl border border-slate-200 text-xs text-slate-600 mt-2">
+                            <strong class="text-agri-700"><i class="fa-solid fa-lightbulb mr-1"></i> Giải thích:</strong> ${q.explanation}
+                        </div>
+                    `;
+                }
+
+                container.appendChild(card);
+            });
+        }
+
+        function toggleTeacherView() {
+            if (appState.examStatus === 'TEACHER') {
+                appState.examStatus = 'START';
+            } else {
+                appState.examStatus = 'TEACHER';
+            }
+            renderView();
+        }
+
+        function renderTeacherDashboard() {
+            const history = appState.history;
+            const totalStudents = history.length;
+            const submitted = history.filter(h => h.status === 'Đã nộp').length;
+
+            document.getElementById('dash-total-students').innerText = totalStudents;
+            document.getElementById('dash-submitted').innerText = submitted;
+            document.getElementById('dash-in-progress').innerText = totalStudents - submitted;
+
+            if (totalStudents > 0) {
+                const scores = history.map(h => h.score);
+                const avg = scores.reduce((a, b) => a + b, 0) / totalStudents;
+                const max = Math.max(...scores);
+                const min = Math.min(...scores);
+
+                document.getElementById('dash-avg-score').innerText = avg.toFixed(2);
+                document.getElementById('dash-max-score').innerText = max.toFixed(2);
+                document.getElementById('dash-min-score').innerText = min.toFixed(2);
+            } else {
+                document.getElementById('dash-avg-score').innerText = '0.0';
+                document.getElementById('dash-max-score').innerText = '0.0';
+                document.getElementById('dash-min-score').innerText = '0.0';
+            }
+
+            // Populate Filter Classes Dropdown
+            const filterClassSelect = document.getElementById('teacher-filter-class');
+            const classes = [...new Set(history.map(h => h.class))];
+            filterClassSelect.innerHTML = '<option value="ALL">Tất cả lớp</option>';
+            classes.forEach(c => {
+                filterClassSelect.innerHTML += `<option value="${c}">${c}</option>`;
+            });
+
+            renderStudentTable();
+            renderScoreChart();
+        }
+
+        function renderStudentTable() {
+            const tbody = document.getElementById('student-table-body');
+            tbody.innerHTML = '';
+
+            const searchQuery = document.getElementById('teacher-search').value.toLowerCase();
+            const filterClass = document.getElementById('teacher-filter-class').value;
+            const sortMode = document.getElementById('teacher-sort').value;
+
+            let filtered = appState.history.filter(item => {
+                const matchName = item.name.toLowerCase().includes(searchQuery) || item.sbd.toLowerCase().includes(searchQuery);
+                const matchClass = filterClass === 'ALL' || item.class === filterClass;
+                return matchName && matchClass;
+            });
+
+            // Sorting
+            if (sortMode === 'SCORE_DESC') {
+                filtered.sort((a, b) => b.score - a.score);
+            } else if (sortMode === 'SCORE_ASC') {
+                filtered.sort((a, b) => a.score - b.score);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-slate-400">Chưa có dữ liệu học sinh tham gia</td></tr>`;
+                return;
+            }
+
+            filtered.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold">${idx + 1}</td>
+                    <td class="p-3 font-bold text-slate-800">${item.name}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 bg-slate-100 rounded text-slate-600 font-semibold">${item.class}</span></td>
+                    <td class="p-3">${item.school}</td>
+                    <td class="p-3 text-slate-500">${item.sbd}</td>
+                    <td class="p-3 text-slate-500">${item.timeTaken}</td>
+                    <td class="p-3 text-center font-bold text-base text-agri-700">${item.score.toFixed(2)}</td>
+                    <td class="p-3 text-center"><span class="px-2 py-1 bg-emerald-100 text-emerald-800 rounded-full font-bold text-[10px]">Đã nộp</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderScoreChart() {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            
+            // Score Distribution Bins (0-2, 2-5, 5-7, 7-8.5, 8.5-10)
+            const bins = [0, 0, 0, 0, 0];
+            appState.history.forEach(h => {
+                if (h.score < 2.5) bins[0]++;
+                else if (h.score < 5.0) bins[1]++;
+                else if (h.score < 7.0) bins[2]++;
+                else if (h.score < 8.5) bins[3]++;
+                else bins[4]++;
+            });
+
+            if (scoreChartInstance) {
+                scoreChartInstance.destroy();
+            }
+
+            scoreChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Kém (<2.5)', 'Yếu (2.5 - 5)', 'TB (5 - 7)', 'Khá (7 - 8.5)', 'Giỏi (8.5 - 10)'],
+                    datasets: [{
+                        label: 'Số học sinh',
+                        data: bins,
+                        backgroundColor: [
+                            'rgba(244, 63, 94, 0.7)',
+                            'rgba(249, 115, 22, 0.7)',
+                            'rgba(234, 179, 8, 0.7)',
+                            'rgba(20, 184, 166, 0.7)',
+                            'rgba(34, 197, 94, 0.7)'
+                        ],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+        }
+
+        function exportToCSV() {
+            if (appState.history.length === 0) {
+                alert('Không có dữ liệu để xuất file!');
+                return;
+            }
+
+            let csv = '\uFEFF'; // BOM for UTF-8 in Excel
+            csv += 'STT,Họ tên,Lớp,Trường,SBD,Thời gian làm,Điểm số,Thời điểm nộp\n';
+
+            appState.history.forEach((item, idx) => {
+                csv += `"${idx + 1}","${item.name}","${item.class}","${item.school}","${item.sbd}","${item.timeTaken}","${item.score}","${item.timestamp}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute('download', `Dach_Sach_Thi_Thu_Cong_Nghe_${Date.now()}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function confirmClearHistory() {
+            if (confirm('Bạn có chắc chắn muốn xóa toàn bộ lịch sử thi thử không?')) {
+                appState.history = [];
+                saveHistoryToStorage();
+                renderTeacherDashboard();
+            }
+        }
+
+        function restartExamFromStart() {
+            appState.examStatus = 'START';
+            renderView();
+        }
+    </script>
+</body>
+</html>
